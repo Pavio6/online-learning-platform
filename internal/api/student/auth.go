@@ -119,7 +119,8 @@ func (h *AuthHandler) GetProfile(c *gin.Context) {
 		return
 	}
 
-	userInfo, err := h.userService.GetUserInfo(userID.(uint))
+	branchID, _ := c.Get("branch_id")
+	userInfo, err := h.userService.GetUserInfo(userID.(uint), branchID.(uint))
 	if err != nil {
 		if appErr, ok := err.(*errors.AppError); ok {
 			c.JSON(appErr.HTTPStatus(), gin.H{

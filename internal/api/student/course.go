@@ -43,7 +43,7 @@ func (h *CourseHandler) ListCourses(c *gin.Context) {
 		pageSize = 10
 	}
 
-	courses, total, err := h.courseService.ListCourses(nil, page, pageSize)
+	courses, total, err := h.courseService.ListCourses(nil, nil, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"code":    errors.ErrCodeInternal,
@@ -68,7 +68,7 @@ func (h *CourseHandler) ListCourses(c *gin.Context) {
 // @Produce json
 // @Param id path int true "课程ID"
 // @Success 200 {object} service.CourseInfo
-// @Router /api/v1/student/courses/:id [get]
+// @Router /api/v1/student/courses/{id} [get]
 func (h *CourseHandler) GetCourse(c *gin.Context) {
 	courseID, err := strconv.ParseUint(c.Param("id"), 10, 32)
 	if err != nil {
@@ -98,3 +98,44 @@ func (h *CourseHandler) GetCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, course)
 }
 
+// ListEnrolledCourses 获取已报名课程列表
+// @Summary 获取已报名课程列表
+// @Description 获取当前学生已报名的课程列表
+// @Tags 学生课程
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param page query int false "页码" default(1)
+// @Param page_size query int false "每页数量" default(10)
+// @Success 200 {object} map[string]interface{}
+// @Router /api/v1/student/courses/enrolled [get]
+func (h *CourseHandler) ListEnrolledCourses(c *gin.Context) {
+	userID, _ := c.Get("user_id")
+	branchID, _ := c.Get("branch_id")
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	pageSize, _ := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+
+	if page < 1 {
+		page = 1
+	}
+	if pageSize < 1 || pageSize > 100 {
+		pageSize = 10
+	}
+
+	courses, total, err := h.courseService.ListEnrolledCourses(userID.(uint), branchID.(uint), page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"code":    errors.ErrCodeInternal,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"courses":   courses,
+		"total":     total,
+		"page":      page,
+		"page_size": pageSize,
+	})
+}
