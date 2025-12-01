@@ -1,0 +1,1246 @@
+basePath: /
+definitions:
+  models.Answers:
+    properties:
+      answer_content:
+        description: 文本内容或图片URL
+        type: string
+      answer_id:
+        type: integer
+      branch:
+        allOf:
+        - $ref: '#/definitions/models.Branches'
+        description: 关联关系
+      branch_id:
+        type: integer
+      created_at:
+        type: string
+      graded_by:
+        description: 批改老师的ID
+        type: integer
+      grader:
+        allOf:
+        - $ref: '#/definitions/models.Users'
+        description: 批改老师
+      is_graded:
+        type: boolean
+      score:
+        type: integer
+      submitted_at:
+        type: string
+      task_id:
+        type: integer
+      type:
+        description: text, image_url
+        type: string
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.Users'
+      user_id:
+        type: integer
+    type: object
+  models.Branches:
+    properties:
+      branch_id:
+        type: integer
+      branch_name:
+        type: string
+      created_at:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Chapters:
+    properties:
+      chapter_id:
+        type: integer
+      chapter_order:
+        type: integer
+      chapter_title:
+        type: string
+      course:
+        allOf:
+        - $ref: '#/definitions/models.Courses'
+        description: 关联关系
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      lessons:
+        items:
+          $ref: '#/definitions/models.Lessons'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  models.Comments:
+    properties:
+      branch:
+        allOf:
+        - $ref: '#/definitions/models.Branches'
+        description: 关联关系
+      branch_id:
+        type: integer
+      comment_content:
+        type: string
+      comment_id:
+        type: integer
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      parent_comment:
+        $ref: '#/definitions/models.Comments'
+      parent_comment_id:
+        description: 回复的评论ID
+        type: integer
+      replies:
+        items:
+          $ref: '#/definitions/models.Comments'
+        type: array
+      updated_at:
+        type: string
+      user:
+        $ref: '#/definitions/models.Users'
+      user_id:
+        type: integer
+    type: object
+  models.Courses:
+    properties:
+      chapters:
+        description: 关联关系（这些关联在分支节点查询时需要从中央服务器获取）
+        items:
+          $ref: '#/definitions/models.Chapters'
+        type: array
+      course_id:
+        type: integer
+      course_title:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      instructor_id:
+        type: integer
+      lessons:
+        items:
+          $ref: '#/definitions/models.Lessons'
+        type: array
+      start_date:
+        type: string
+      status:
+        description: active, archived
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Learning:
+    properties:
+      completed_at:
+        type: string
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      learning_id:
+        type: integer
+      progress_percentage:
+        type: integer
+      status:
+        description: enrolled, in_progress, completed
+        type: string
+      updated_at:
+        type: string
+      user:
+        allOf:
+        - $ref: '#/definitions/models.Users'
+        description: 关联关系
+      user_id:
+        type: integer
+    type: object
+  models.Lessons:
+    properties:
+      chapter:
+        $ref: '#/definitions/models.Chapters'
+      chapter_id:
+        type: integer
+      content_url:
+        description: OSS视频链接
+        type: string
+      course:
+        allOf:
+        - $ref: '#/definitions/models.Courses'
+        description: 关联关系
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      lesson_id:
+        type: integer
+      lesson_order:
+        type: integer
+      lesson_title:
+        type: string
+      lesson_type:
+        description: video, text, quiz
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/models.Tasks'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  models.Tasks:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      lesson:
+        allOf:
+        - $ref: '#/definitions/models.Lessons'
+        description: 关联关系
+      lesson_id:
+        type: integer
+      max_score:
+        type: integer
+      task_id:
+        type: integer
+      task_title:
+        type: string
+      task_type:
+        description: essay, quiz, upload
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Users:
+    properties:
+      branch:
+        allOf:
+        - $ref: '#/definitions/models.Branches'
+        description: 关联关系
+      branch_id:
+        type: integer
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      role:
+        description: student, teacher
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  service.AddCommentRequest:
+    properties:
+      content:
+        type: string
+      parent_comment_id:
+        type: integer
+    required:
+    - content
+    type: object
+  service.ChapterInfo:
+    properties:
+      chapter_id:
+        type: integer
+      chapter_order:
+        type: integer
+      chapter_title:
+        type: string
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      lessons:
+        items:
+          $ref: '#/definitions/service.LessonInfo'
+        type: array
+      updated_at:
+        type: string
+    type: object
+  service.CommentView:
+    properties:
+      branch_id:
+        type: integer
+      comment_content:
+        type: string
+      comment_id:
+        type: integer
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      parent_comment_id:
+        type: integer
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  service.CourseInfo:
+    properties:
+      chapters:
+        items:
+          $ref: '#/definitions/service.ChapterInfo'
+        type: array
+      course_id:
+        type: integer
+      course_title:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      instructor_branch_id:
+        type: integer
+      instructor_branch_user_id:
+        type: integer
+      instructor_id:
+        type: integer
+      start_date:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  service.CreateChapterRequest:
+    properties:
+      chapter_order:
+        type: integer
+      chapter_title:
+        type: string
+      description:
+        type: string
+    required:
+    - chapter_title
+    type: object
+  service.CreateCourseRequest:
+    properties:
+      course_title:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      start_date:
+        type: string
+      status:
+        type: string
+    required:
+    - course_title
+    type: object
+  service.CreateTaskRequest:
+    properties:
+      description:
+        type: string
+      max_score:
+        type: integer
+      task_title:
+        type: string
+      task_type:
+        description: essay, quiz, upload
+        type: string
+    required:
+    - task_title
+    type: object
+  service.GradeAnswerRequest:
+    properties:
+      score:
+        type: integer
+    required:
+    - score
+    type: object
+  service.LearningProgressView:
+    properties:
+      branch_id:
+        type: integer
+      completed_at:
+        type: string
+      course_id:
+        type: integer
+      email:
+        type: string
+      progress_percentage:
+        type: integer
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  service.LessonInfo:
+    properties:
+      chapter_id:
+        type: integer
+      content_url:
+        type: string
+      course_id:
+        type: integer
+      created_at:
+        type: string
+      lesson_id:
+        type: integer
+      lesson_order:
+        type: integer
+      lesson_title:
+        type: string
+      lesson_type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  service.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  service.LoginResponse:
+    properties:
+      branch_id:
+        type: integer
+      email:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  service.RegisterRequest:
+    properties:
+      branch_id:
+        type: integer
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      username:
+        type: string
+    required:
+    - branch_id
+    - email
+    - password
+    - username
+    type: object
+  service.RegisterResponse:
+    properties:
+      branch_id:
+        type: integer
+      email:
+        type: string
+      role:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+  service.TaskInfo:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      lesson_id:
+        type: integer
+      max_score:
+        type: integer
+      task_id:
+        type: integer
+      task_title:
+        type: string
+      task_type:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  service.UpdateProgressRequest:
+    properties:
+      progress_percentage:
+        type: integer
+      status:
+        type: string
+    type: object
+  service.UserInfo:
+    properties:
+      branch_id:
+        type: integer
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      role:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: integer
+      username:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+  description: 这是一个分布式在线学习平台的API文档
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  termsOfService: http://swagger.io/terms/
+  title: 分布式在线学习平台 API
+  version: "1.0"
+paths:
+  /api/v1/courses/{id}/comments:
+    get:
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.CommentView'
+            type: array
+      summary: 获取课程评论
+      tags:
+      - 评论
+  /api/v1/student/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 学生登录获取token
+      parameters:
+      - description: 登录信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 学生登录
+      tags:
+      - 学生认证
+  /api/v1/student/auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 学生注册账号，需要选择校区
+      parameters:
+      - description: 注册信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 学生注册
+      tags:
+      - 学生认证
+  /api/v1/student/branches:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有可选的校区列表，用于注册时选择
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Branches'
+            type: array
+      summary: 获取校区列表
+      tags:
+      - 学生认证
+  /api/v1/student/courses:
+    get:
+      consumes:
+      - application/json
+      description: 获取所有可用课程列表
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 获取课程列表
+      tags:
+      - 学生课程
+  /api/v1/student/courses/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取课程详细信息，包含章节和课程
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.CourseInfo'
+      summary: 获取课程详情
+      tags:
+      - 学生课程
+  /api/v1/student/courses/{id}/comments:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 评论
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.AddCommentRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Comments'
+      security:
+      - BearerAuth: []
+      summary: 学生发表评论
+      tags:
+      - 学生评论
+  /api/v1/student/courses/{id}/enroll:
+    post:
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Learning'
+      security:
+      - BearerAuth: []
+      summary: 学生报名课程
+      tags:
+      - 学生学习
+  /api/v1/student/courses/{id}/progress:
+    get:
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Learning'
+      security:
+      - BearerAuth: []
+      summary: 获取学习进度
+      tags:
+      - 学生学习
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 学习进度
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.UpdateProgressRequest'
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Learning'
+      security:
+      - BearerAuth: []
+      summary: 更新学习进度
+      tags:
+      - 学生学习
+  /api/v1/student/courses/{id}/tasks:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定课程的所有任务列表
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.TaskInfo'
+            type: array
+      summary: 获取课程的所有任务
+      tags:
+      - 学生任务
+  /api/v1/student/profile:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录学生的个人信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.UserInfo'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取个人信息
+      tags:
+      - 学生认证
+  /api/v1/student/tasks/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取任务详细信息
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.TaskInfo'
+      summary: 获取任务详情
+      tags:
+      - 学生任务
+  /api/v1/student/tasks/{id}/answers:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前学生在指定任务下的作业
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Answers'
+      security:
+      - BearerAuth: []
+      summary: 学生查询作业
+      tags:
+      - 学生任务
+    post:
+      consumes:
+      - multipart/form-data
+      description: 学生上传作业文本或图片
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 作业文本内容
+        in: formData
+        name: answer_content
+        type: string
+      - description: 作业类型(text/image_url)，默认为text
+        in: formData
+        name: type
+        type: string
+      - description: 作业图片文件
+        in: formData
+        name: file
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Answers'
+      security:
+      - BearerAuth: []
+      summary: 学生提交作业
+      tags:
+      - 学生任务
+  /api/v1/teacher/answers/{id}/grade:
+    put:
+      consumes:
+      - application/json
+      description: 根据 answer_id 评分（限本分支教师）
+      parameters:
+      - description: 作业ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 评分信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.GradeAnswerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Answers'
+      security:
+      - BearerAuth: []
+      summary: 教师评分
+      tags:
+      - 教师任务管理
+  /api/v1/teacher/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: 教师登录获取token
+      parameters:
+      - description: 登录信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: 教师登录
+      tags:
+      - 教师认证
+  /api/v1/teacher/courses:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前教师创建的所有课程
+      parameters:
+      - default: 1
+        description: 页码
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取我的课程列表
+      tags:
+      - 教师课程管理
+    post:
+      consumes:
+      - application/json
+      description: 教师创建新课程
+      parameters:
+      - description: 课程信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateCourseRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Courses'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 创建课程
+      tags:
+      - 教师课程管理
+  /api/v1/teacher/courses/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取课程详细信息，包含章节和课程
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.CourseInfo'
+      security:
+      - BearerAuth: []
+      summary: 获取课程详情
+      tags:
+      - 教师课程管理
+  /api/v1/teacher/courses/{id}/chapters:
+    post:
+      consumes:
+      - application/json
+      description: 为课程创建新章节
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 章节信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateChapterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Chapters'
+      security:
+      - BearerAuth: []
+      summary: 创建章节
+      tags:
+      - 教师课程管理
+  /api/v1/teacher/courses/{id}/chapters/{chapter_id}/lessons:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 为章节创建新课程，可以上传视频文件
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 章节ID
+        in: path
+        name: chapter_id
+        required: true
+        type: integer
+      - description: 课程标题
+        in: formData
+        name: lesson_title
+        required: true
+        type: string
+      - default: video
+        description: 课程类型
+        in: formData
+        name: lesson_type
+        type: string
+      - description: 课程顺序
+        in: formData
+        name: lesson_order
+        type: integer
+      - description: 视频文件
+        in: formData
+        name: video_file
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Lessons'
+      security:
+      - BearerAuth: []
+      summary: 创建课程
+      tags:
+      - 教师课程管理
+  /api/v1/teacher/courses/{id}/learning:
+    get:
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.LearningProgressView'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: 查看课程学习进度
+      tags:
+      - 教师学习
+  /api/v1/teacher/courses/{id}/tasks:
+    get:
+      consumes:
+      - application/json
+      description: 获取指定课程的所有任务列表
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/service.TaskInfo'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: 获取课程的所有任务
+      tags:
+      - 教师任务管理
+  /api/v1/teacher/lessons/{id}/tasks:
+    post:
+      consumes:
+      - application/json
+      description: 为课程创建新任务
+      parameters:
+      - description: 课程ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 任务信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/service.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tasks'
+      security:
+      - BearerAuth: []
+      summary: 创建任务
+      tags:
+      - 教师任务管理
+  /api/v1/teacher/profile:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录教师的个人信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.UserInfo'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: 获取个人信息
+      tags:
+      - 教师认证
+  /api/v1/teacher/tasks/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 获取任务详细信息
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/service.TaskInfo'
+      security:
+      - BearerAuth: []
+      summary: 获取任务详情
+      tags:
+      - 教师任务管理
+  /api/v1/teacher/tasks/{id}/answers:
+    get:
+      description: 教师获取当前任务下的所有作业（仅自己的分支）
+      parameters:
+      - description: 任务ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Answers'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: 查看作业
+      tags:
+      - 教师任务管理
+securityDefinitions:
+  BearerAuth:
+    description: 'JWT Authorization header using the Bearer scheme. Example: "Bearer
+      {token}"'
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
